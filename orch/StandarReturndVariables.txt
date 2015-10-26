@@ -1,0 +1,13 @@
+Component Runbooks
+------------------
+Error State
+A numeric vlue. 0 for success, 1 for warining, 2+ for error.
+Error Message
+A string containting the error or warning message. Blank on successful execution.
+Trace
+Detailed execution information. Blank on successful execution.
+
+Control Runbooks
+----------------
+Error State
+A numeric vlue. 0 for success, 1 for warining, 2+ for error.
