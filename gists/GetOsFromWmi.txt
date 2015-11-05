@@ -1,0 +1,2 @@
+#Gets OS Name
+(Get-WmiObject win32_operatingsystem).Caption
