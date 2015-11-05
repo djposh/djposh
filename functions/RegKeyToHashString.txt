@@ -1,0 +1,15 @@
+#The function accepts RegistryKey object and returns string formated for hash tabe assignment
+#Use Get-Item to get the RegistryKey object, for example Get-Item HKCU:\Console
+Function RegKeyToHashString {
+	Param ( 
+		[parameter(Mandatroy=$true)]
+		[ValidateNotNull()]
+		$RegKey
+	)
+	
+	$ReturnString = ""
+	foreach ($key in $RegKey.GetValueNames()){
+		$ReturnString += "`"$key`" `= `"$($RegKey.GetValue($key))`"`n"
+	}
+	Return $ReturnString
+}
