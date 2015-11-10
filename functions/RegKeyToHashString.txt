@@ -2,7 +2,7 @@
 #Use Get-Item to get the RegistryKey object, for example Get-Item HKCU:\Console
 Function RegKeyToHashString {
 	Param ( 
-		[parameter(Mandatroy=$true)]
+		[parameter(Mandatory=$true)]
 		[ValidateNotNull()]
 		$RegKey
 	)
