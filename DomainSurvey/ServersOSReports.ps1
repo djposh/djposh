@@ -104,12 +104,14 @@ foreach ($servername in $Servers){
     foreach($key in $subkeys){
         $thiskey=$UninstallKey+"\\"+$key
         $thisSubKey=$reg.OpenSubKey($thiskey)
-        $obj = New-Object PSObject
-        $obj | Add-Member -MemberType NoteProperty -Name "ServerName" -Value $servername
-        $obj | Add-Member -MemberType NoteProperty -Name "DisplayName" -Value $($thisSubKey.GetValue("DisplayName"))
-        $obj | Add-Member -MemberType NoteProperty -Name "DisplayVersion" -Value $($thisSubKey.GetValue("DisplayVersion"))
-        $obj | Add-Member -MemberType NoteProperty -Name "Publisher" -Value $($thisSubKey.GetValue("Publisher"))
-        $UninstallArray += $obj
+        if ($thisSubKey.GetValue("DisplayName") -ne $null){
+            $obj = New-Object PSObject
+            $obj | Add-Member -MemberType NoteProperty -Name "ServerName" -Value $servername
+            $obj | Add-Member -MemberType NoteProperty -Name "DisplayName" -Value $($thisSubKey.GetValue("DisplayName"))
+            $obj | Add-Member -MemberType NoteProperty -Name "DisplayVersion" -Value $($thisSubKey.GetValue("DisplayVersion"))
+            $obj | Add-Member -MemberType NoteProperty -Name "Publisher" -Value $($thisSubKey.GetValue("Publisher"))
+            $UninstallArray += $obj
+        }
     }
 }
 
