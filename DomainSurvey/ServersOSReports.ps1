@@ -113,4 +113,4 @@ foreach ($servername in $Servers){
     }
 }
 
-
+$UninstallArray | Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\InstalledSoftware.csv
