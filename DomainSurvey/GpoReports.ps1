@@ -7,4 +7,5 @@ if ((Test-Path $GPOReportsPath) -eq $false){
     mkdir $GPOReportsPath
 }
 cd $ReportsPath
-Get-GPO -All | Select-Object ID | foreach {Get-GPOReport -Guid $_.id -ReportType Html -Path $GPOReportsPath\$($_.id).html}
+foreach ($gpo in(Get-GPO -All)){Get-GPOReport -Guid $gpo.id -ReportType Html -Path $GPOReportsPath\$($gpo.DisplayName).$($gpo.id).html}
+Get-GPOReport -All -ReportType xml -Path $GPOReportsPath\AllGPOsReport.xml
