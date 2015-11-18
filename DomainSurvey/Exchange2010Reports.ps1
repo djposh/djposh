@@ -19,5 +19,4 @@ Get-ReceiveConnector | select Identity, Enabled, Name, Server, Bindings, RemoteI
 
 
 $num = (Get-Mailbox -ResultSize unlimited | measure).Count
-"There are $num mailboxes" | Out-File $ReportsPath\NumerOfMailboxes.txt -Encoding unicode -Append 
-
+"There are $num mailboxes" | Out-File $ReportsPath\NumberOfMailboxes.txt -Encoding unicode -Append
