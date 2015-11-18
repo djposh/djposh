@@ -70,7 +70,7 @@ $Servers | Export-Csv -Path $HOME\reports\ADComputers.csv -Encoding Unicode -NoT
 
 $CimSessions = @()
 $CimDCOMopt = New-CimSessionOption -Protocol dcom
-foreach ($server in $Servers){    
+foreach ($server in $Servers.name){    
     try{
         $cimsession = New-CimSession -SessionOption $CimDCOMopt -ComputerName $server
         if ($CimSession -ne $null){
@@ -96,7 +96,7 @@ if ($CimSessions.count -ne 0){
 }
 
 $UninstallArray = @()
-foreach ($servername in $Servers){
+foreach ($servername in $Servers.name){
         $UninstallKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
     $reg=[Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine',$servername)
     $regkey=$reg.OpenSubKey($UninstallKey)
