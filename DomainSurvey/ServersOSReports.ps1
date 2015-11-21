@@ -1,61 +1,4 @@
-﻿Function Convert-OutputForCSV {
-    [cmdletbinding()]
-    Param (
-        [parameter(ValueFromPipeline)]
-        [psobject]$InputObject,
-        [parameter()]
-        [ValidateSet('Stack','Comma')]
-        [string]$OutputPropertyType = 'Comma'
-    )
-    Begin {
-        $PSBoundParameters.GetEnumerator() | ForEach {
-            Write-Verbose "$($_)"
-        }
-        $FirstRun = $True
-    }
-    Process {
-        If ($FirstRun) {
-            $OutputOrder = $InputObject.psobject.properties.name
-            Write-Verbose "Output Order:`n $($OutputOrder -join ', ' )"
-            $FirstRun = $False
-            #Get properties to process
-            $Properties = Get-Member -InputObject $InputObject -MemberType *Property
-            #Get properties that hold a collection
-            $Properties_Collection = @(($Properties | Where-Object {
-                $_.Definition -match "Collection|\[\]"
-            }).Name)
-            #Get properties that do not hold a collection
-            $Properties_NoCollection = @(($Properties | Where-Object {
-                $_.Definition -notmatch "Collection|\[\]"
-            }).Name)
-            Write-Verbose "Properties Found that have collections:`n $(($Properties_Collection) -join ', ')"
-            Write-Verbose "Properties Found that have no collections:`n $(($Properties_NoCollection) -join ', ')"
-        }
- 
-        $InputObject | ForEach {
-            $Line = $_
-            $stringBuilder = New-Object Text.StringBuilder
-            $Null = $stringBuilder.AppendLine("[pscustomobject] @{")
-
-            $OutputOrder | ForEach {
-                If ($OutputPropertyType -eq 'Stack') {
-                    $Null = $stringBuilder.AppendLine("`"$($_)`" = `"$(($line.$($_) | Out-String).Trim())`"")
-                } ElseIf ($OutputPropertyType -eq "Comma") {
-                    $Null = $stringBuilder.AppendLine("`"$($_)`" = `"$($line.$($_) -join ', ')`"")                   
-                }
-            }
-            $Null = $stringBuilder.AppendLine("}")
- 
-            Invoke-Expression $stringBuilder.ToString()
-        }
-    }
-    End {}
-}
-
-########Script Starts Here###########
-
-
-cd $HOME
+﻿cd $HOME
 if ((Test-Path $HOME\reports\) -eq $false){
     mkdir $HOME\reports
 } 
@@ -91,7 +34,16 @@ if ($CimSessions.count -ne 0){
         Get-CimInstance -ClassName Win32_share -CimSession $cimsession | select PSComputerName, Name, Path, Description | Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\FileShares.csv        
         Get-CimInstance -ClassName Win32_OperatingSystem -CimSession $cimsession | select PSComputerName, CSName, Caption, CSDVersion, OSArchitecture | Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\OperatingSystem.csv
         Get-CimInstance -ClassName Win32_ServerFeature -CimSession $cimsession| select PSComputerName, Name | Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\OSFeatures.csv
-        Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration  -CimSession $cimsession| where {$_.ipenabled -eq $true} | select PSComputerName,Index, Description, DHCPEnabled, IPAddress, DNSHostName, DNSServerSearchOrder,WinsPrimaryServer |Convert-OutputForCSV  |Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\NetworkInterfaces.csv
+        Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration  -CimSession $cimsession| where {$_.ipenabled -eq $true} | Select-Object -Property PSComputerName,Index, @{
+                name='ipaddress' 
+                expression={$_.IPAddress -join ','}
+            }, Description, DHCPEnabled,  DNSHostName, @{
+                name='DNSServerSearchOrder'
+                expression={$_.DNSServerSearchOrder -join ','}
+            }, @{
+                name='winsPrimaryServer'
+                expression={$_.WinsPrimaryServer -join ','}
+            }|Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\NetworkInterfaces.csv
     }
 }
 
