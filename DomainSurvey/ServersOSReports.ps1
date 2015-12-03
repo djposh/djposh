@@ -36,13 +36,13 @@ if ($CimSessions.count -ne 0){
         Get-CimInstance -ClassName Win32_ServerFeature -CimSession $cimsession| select PSComputerName, Name | Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\OSFeatures.csv
         Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration  -CimSession $cimsession| where {$_.ipenabled -eq $true} | Select-Object -Property PSComputerName,Index, @{
                 name='ipaddress' 
-                expression={$_.IPAddress -join ','}
+                expression={$_.IPAddress -join ' ; '}
             }, Description, DHCPEnabled,  DNSHostName, @{
                 name='DNSServerSearchOrder'
-                expression={$_.DNSServerSearchOrder -join ','}
+                expression={$_.DNSServerSearchOrder -join ' ; '}
             }, @{
                 name='winsPrimaryServer'
-                expression={$_.WinsPrimaryServer -join ','}
+                expression={$_.WinsPrimaryServer -join ' ; '}
             }|Export-Csv -Append -Encoding Unicode -NoTypeInformation -Path $ReportsPath\NetworkInterfaces.csv
     }
 }
